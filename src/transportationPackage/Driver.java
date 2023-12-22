@@ -16,18 +16,24 @@ import wheeledTransportPackage.WheeledTransportation;
 public class Driver {
 	
 	public static Object[] copyTheObjects(Object[] arr) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		int i;
-		
-		Object[] newArr = new Object[arr.length];
-		
-		for(i=0; i<arr.length; i++) {
+		try {
+			int i;
 			
-			if(arr[i] != null) {
-				Constructor[] x = arr[i].getClass().getConstructors();
-				newArr[i] = x[2].newInstance(arr[i]);
+			Object[] newArr = new Object[arr.length];
+			
+			for(i=0; i<arr.length; i++) {
+				
+				if(arr[i] != null) {
+					Constructor[] x = arr[i].getClass().getConstructors();
+					newArr[i] = x[2].newInstance(arr[i]);
+				}
 			}
-		}
-		return newArr;
+			return newArr;
+		} catch (InstantiationException e) {
+            System.out.println("Error: Unable to instantiate object.");
+            return null;
+        }
+		
 		
 	}
 
@@ -44,7 +50,7 @@ public class Driver {
 			//System.out.println("\n--- Wheeled Transportation ---\n");
 			wt1 = new WheeledTransportation ();
 			wt2 = new WheeledTransportation (2000, 50);
-			//wt3 = wt2.clone();
+			wt3 = wt2.clone();
 			
 			
 			//System.out.println("\n--- MonoWheeles Transportation ---\n");
@@ -55,7 +61,7 @@ public class Driver {
 			//System.out.println("\n--- Watercraft Transportation ---\n");
 			f1 = new Ferry ();
 			f2 = new Ferry (2, 50);
-			//f3 = f1.clone();
+			f3 = f1.clone();
 			
 			//System.out.println("\n--- Train Transportation ---\n");
 			train1 = new Train ();
@@ -90,14 +96,108 @@ public class Driver {
 			System.out.println("-- Array after copy --");
 			printArray(arr2);
 			
+			Object[] a1 = {wt1,wt2,mw1,mw2,f1,f2,train1,train2,m1,m2,t1,t2,ac2,ac1};
+			Object[] a2 = {wt1,wt2,mw1,mw2,f1,f2,train1,train2,m1,m2,t1,t2,f3,wt3};
+			
+			System.out.println("\nResult of Array1:");
+			findLeastAndMostExpensiveAircraft(a1);
+			System.out.println("\nResult of Array2:");
+			findLeastAndMostExpensiveAircraft(a2);
 			
 	}
 	
+	public static void 	sortArray(AirCraft[] arr) {
+		try {
+            int i, j;
+            AirCraft temp;
+
+            for (i = 0; i < arr.length; i++) {
+                for (j = i; j < arr.length; j++) {
+                    if (arr[j].smallerBy(arr[i])) {
+                        temp = arr[i];
+                        arr[i] = arr[j];
+                        arr[j] = temp;
+                    }
+                }
+            }
+        } catch (NullPointerException e) {
+            System.err.println("Error: Null array in sortArray");
+        } catch (Exception e) {
+            System.err.println("Error in sortArray: " + e.getMessage());
+        }
+		
+	}
+	
+	public static AirCraft[] appendToArray(AirCraft[] arr, AirCraft element) {	
+		try {
+            int i;
+
+            AirCraft[] newArr = new AirCraft[arr.length + 1];
+
+            for (i = 0; i < arr.length; i++) {
+                newArr[i] = arr[i].clone();
+            }
+            newArr[arr.length] = element.clone();
+
+            return newArr;
+        } catch (NullPointerException e) {
+            System.err.println("Error: Null array in appendToArray");
+            return arr; 
+        } catch (Exception e) {
+            System.err.println("Error in appendToArray: " + e.getMessage());
+            return arr; 
+        }
+	}
+	
+	public static void findLeastAndMostExpensiveAircraft(Object[] arr) {
+		try {
+            int i;
+            AirCraft[] acArr = new AirCraft[0];
+
+            for (i = 0; i < arr.length; i++) {
+                if (arr[i] instanceof AirCraft) {
+                    AirCraft element = (AirCraft) arr[i];
+                    acArr = appendToArray(acArr, element);
+                }
+            }
+            // Sorting the array
+            sortArray(acArr);
+
+            if (acArr.length > 0) {
+                if (acArr.length == 1) {
+                    System.out.println("The least and most expensive aircraft is:");
+                    System.out.println(acArr[0]);
+                } else {
+                    System.out.println("The least expensive aircraft is:");
+                    System.out.println(acArr[0]);
+                    System.out.println("The most expensive aircraft is:");
+                    System.out.println(acArr[acArr.length - 1]);
+                }
+            } else {
+                System.out.println("No Aircraft found.");
+            }
+        } catch (NullPointerException e) {
+            // Handle null array
+            System.err.println("Error: Null array in findLeastAndMostExpensiveAircraft");
+        } catch (Exception e) {
+            // Handle other exceptions
+            System.err.println("Error in findLeastAndMostExpensiveAircraft: " + e.getMessage());
+        }
+	}
+	
 	public static void printArray(Object[] a) {
-		for(int i=0 ; i< a.length; i++) {
-			System.out.println(a[i]);
-			System.out.println();
-		}
+		try {
+            for (int i = 0; i < a.length; i++) {
+                System.out.println(a[i]);
+                System.out.println();
+            }
+        } catch (NullPointerException e) {
+            // Handle null array
+            System.err.println("Error: Null array in printArray");
+        } catch (Exception e) {
+            // Handle other exceptions
+            System.err.println("Error in printArray: " + e.getMessage());
+        }
 		
 	}
 }
